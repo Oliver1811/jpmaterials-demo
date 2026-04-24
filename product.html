@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product — JP Materials</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- =====================================================================
+       NAVBAR
+       ===================================================================== -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">JP<span>Materials</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="cart.html" class="nav-cart-link">
+            Cart
+            <span class="cart-badge">0</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- =====================================================================
+       PRODUCT DETAIL
+       ===================================================================== -->
+  <main>
+    <div class="container">
+
+      <a href="index.html" class="back-link">&#8592; Back to Products</a>
+
+      <!-- Content is injected here by renderProductDetail() -->
+      <div id="product-detail-container"></div>
+
+    </div>
+  </main>
+
+  <!-- =====================================================================
+       FOOTER
+       ===================================================================== -->
+  <footer>
+    <p>&copy; 2026 JP Materials. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // -------------------------------------------------------------------------
+    // Bootstrap the page
+    // -------------------------------------------------------------------------
+    document.addEventListener("DOMContentLoaded", () => {
+      const id = getQueryParam("id");
+      const product = id ? getProductById(id) : null;
+
+      if (!product) {
+        renderNotFound();
+      } else {
+        renderProductDetail(product);
+        // Update the page title to match the product
+        document.title = `${product.name} — JP Materials`;
+      }
+    });
+
+    // -------------------------------------------------------------------------
+    // Render the full product detail view
+    // -------------------------------------------------------------------------
+
+    /**
+     * Injects the product detail layout into the page.
+     * @param {Object} product
+     */
+    function renderProductDetail(product) {
+      const container = document.getElementById("product-detail-container");
+
+      // Determine stock label class and text
+      const { stockClass, stockText } = getStockInfo(product.stock);
+
+      container.innerHTML = `
+        <div class="product-detail">
+
+          <!-- Left: product image -->
+          <img
+            class="product-detail__image"
+            src="${product.image}"
+            alt="${product.name}"
+          />
+
+          <!-- Right: product info -->
+          <div class="product-detail__info">
+            <h1 class="product-detail__name">${product.name}</h1>
+
+            <p class="product-detail__price">£${product.price.toFixed(2)}</p>
+
+            <span class="stock-label ${stockClass}">${stockText}</span>
+
+            <p class="product-detail__description">${product.description}</p>
+
+            <!-- Quantity selector -->
+            <div>
+              <label style="font-size:0.9rem; font-weight:600; margin-bottom:0.4rem; display:block;">
+                Quantity
+              </label>
+              <div class="quantity-selector">
+                <button type="button" onclick="decrementQty(${product.stock})">−</button>
+                <input
+                  type="number"
+                  id="qty-input"
+                  value="1"
+                  min="1"
+                  max="${product.stock}"
+                  ${product.stock === 0 ? "disabled" : ""}
+                />
+                <button type="button" onclick="incrementQty(${product.stock})">+</button>
+              </div>
+            </div>
+
+            <!-- Add to cart -->
+            <button
+              id="add-to-cart-btn"
+              class="btn btn-primary"
+              style="margin-top:0.5rem; align-self:flex-start;"
+              ${product.stock === 0 ? "disabled" : ""}
+              onclick="handleAddToCart(${product.id})"
+            >
+              ${product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+            </button>
+
+            <!-- Inline confirmation message -->
+            <p id="add-confirmation" style="display:none; color:#155724; font-weight:600; font-size:0.9rem;">
+              ✓ Added to your cart!
+            </p>
+          </div>
+
+        </div>
+      `;
+    }
+
+    /**
+     * Shows a friendly "not found" message when the product ID is invalid.
+     */
+    function renderNotFound() {
+      const container = document.getElementById("product-detail-container");
+      container.innerHTML = `
+        <div class="empty-state">
+          <span class="empty-icon">🔍</span>
+          <h2>Product not found</h2>
+          <p>The product you're looking for doesn't exist or has been removed.</p>
+          <a href="index.html" class="btn btn-primary">Browse Products</a>
+        </div>
+      `;
+    }
+
+    // -------------------------------------------------------------------------
+    // Quantity selector controls
+    // -------------------------------------------------------------------------
+
+    function getQtyInput() {
+      return document.getElementById("qty-input");
+    }
+
+    function incrementQty(maxStock) {
+      const input = getQtyInput();
+      const current = parseInt(input.value, 10);
+      if (current < maxStock) input.value = current + 1;
+    }
+
+    function decrementQty() {
+      const input = getQtyInput();
+      const current = parseInt(input.value, 10);
+      if (current > 1) input.value = current - 1;
+    }
+
+    // -------------------------------------------------------------------------
+    // Add to cart handler
+    // -------------------------------------------------------------------------
+
+    /**
+     * Reads the quantity input, adds the product to the cart,
+     * then shows a short confirmation message.
+     * @param {number} productId
+     */
+    function handleAddToCart(productId) {
+      const qty = parseInt(getQtyInput().value, 10) || 1;
+      addToCart(productId, qty);
+
+      // Show confirmation
+      const confirmation = document.getElementById("add-confirmation");
+      const btn = document.getElementById("add-to-cart-btn");
+
+      confirmation.style.display = "block";
+      btn.textContent = "Added!";
+      btn.classList.add("btn-added");
+      btn.disabled = true;
+
+      setTimeout(() => {
+        confirmation.style.display = "none";
+        btn.textContent = "Add to Cart";
+        btn.classList.remove("btn-added");
+        btn.disabled = false;
+      }, 2000);
+    }
+
+    // -------------------------------------------------------------------------
+    // Stock labelling helper
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the CSS class and display text for a stock level.
+     * @param {number} stock
+     * @returns {{ stockClass: string, stockText: string }}
+     */
+    function getStockInfo(stock) {
+      if (stock === 0)  return { stockClass: "out-of-stock", stockText: "Out of Stock" };
+      if (stock <= 10)  return { stockClass: "low-stock",    stockText: `Low Stock — ${stock} left` };
+      return               { stockClass: "in-stock",     stockText: `In Stock (${stock})` };
+    }
+  </script>
+
+</body>
+</html>
