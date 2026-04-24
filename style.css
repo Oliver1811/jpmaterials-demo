@@ -229,7 +229,7 @@ main {
 }
 
 /* =============================================================================
-   HERO SECTION (index.html)
+   HERO SECTION
    ============================================================================= */
 
 .hero {
@@ -248,6 +248,241 @@ main {
   opacity: 0.88;
   max-width: 520px;
   margin-inline: auto;
+  margin-bottom: 1.5rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* =============================================================================
+   BENEFITS STRIP (index.html)
+   ============================================================================= */
+
+.benefits-strip {
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 2.5rem 1.25rem;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.benefit-card {
+  text-align: center;
+  padding: 1rem;
+}
+
+.benefit-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+.benefit-card h3 {
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  color: var(--color-primary);
+}
+
+.benefit-card p {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* =============================================================================
+   FEATURED PRODUCTS SECTION (index.html)
+   ============================================================================= */
+
+.featured-section {
+  padding: 2.5rem 1.25rem;
+}
+
+.featured-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.featured-view-all {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  transition: opacity 0.2s;
+}
+
+.featured-view-all:hover {
+  opacity: 0.75;
+}
+
+/* =============================================================================
+   HOME ABOUT SNIPPET (index.html)
+   ============================================================================= */
+
+.home-about {
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: 3rem 1.25rem;
+}
+
+.home-about-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.home-about h2 {
+  font-size: 1.4rem;
+  color: var(--color-primary);
+  margin-bottom: 0.6rem;
+}
+
+.home-about p {
+  color: var(--color-text-muted);
+  line-height: 1.75;
+}
+
+@media (max-width: 768px) {
+  .benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .home-about-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .featured-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* =============================================================================
+   ABOUT SECTION — standalone about.html page
+   ============================================================================= */
+
+.about-section-page {
+  padding-block: 2.5rem;
+}
+
+.about-grid-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.about-block h2 {
+  font-size: 1.15rem;
+  color: var(--color-primary);
+  margin-bottom: 0.6rem;
+}
+
+.about-block p {
+  color: var(--color-text-muted);
+  line-height: 1.75;
+  margin-bottom: 0.5rem;
+}
+
+.about-list {
+  list-style: disc;
+  padding-left: 1.25rem;
+  color: var(--color-text-muted);
+  line-height: 2;
+}
+
+.about-stats-bar {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.about-stats-bar .stat-card {
+  flex: 1;
+  min-width: 120px;
+}
+
+@media (max-width: 768px) {
+  .about-grid-page {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =============================================================================
+   ABOUT SECTION (index.html)
+   ============================================================================= */
+
+.about-section {
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 3rem 1.25rem;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.about-text h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-primary);
+}
+
+.about-text p {
+  color: var(--color-text-muted);
+  line-height: 1.75;
+  margin-bottom: 0.6rem;
+}
+
+.about-stats {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.stat-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-number {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.stat-label {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* =============================================================================
@@ -287,7 +522,9 @@ main {
 .product-card__image {
   width: 100%;
   aspect-ratio: 3 / 2;
-  object-fit: cover;
+  object-fit: contain;
+  background-color: #fff;
+  padding: 0.75rem;
 }
 
 .product-card__body {
@@ -342,7 +579,9 @@ main {
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
   aspect-ratio: 4 / 3;
-  object-fit: cover;
+  object-fit: contain;
+  background-color: #fff;
+  padding: 1.5rem;
 }
 
 .product-detail__info {

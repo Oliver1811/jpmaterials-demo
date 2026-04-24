@@ -16,6 +16,8 @@
       <a href="index.html" class="nav-brand">JP<span>Materials</span></a>
       <ul class="nav-links">
         <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="about.html">About</a></li>
         <li>
           <a href="cart.html" class="nav-cart-link">
             Cart
@@ -31,19 +33,85 @@
        ===================================================================== -->
   <section class="hero">
     <h1>Professional Rendering Products</h1>
-    <p>Premium base coats, finishing renders, and additives — delivered direct to you.</p>
+    <p>Trade-quality base coats, renders, and additives — delivered direct to your door.</p>
+    <div class="hero-actions">
+      <a href="products.html" class="btn btn-primary">Shop Products</a>
+      <a href="about.html" class="btn btn-secondary" style="background:transparent; border-color:rgba(255,255,255,0.7); color:#fff;">Learn More</a>
+    </div>
   </section>
 
   <!-- =====================================================================
-       PRODUCT LISTING
+       BENEFITS STRIP
        ===================================================================== -->
-  <main>
-    <div class="container">
-      <h2 class="section-title">All Products</h2>
-      <!-- Product cards are injected here by renderProductGrid() -->
-      <div class="product-grid" id="product-grid"></div>
+  <section class="benefits-strip">
+    <div class="container benefits-grid">
+      <div class="benefit-card">
+        <span class="benefit-icon">&#128230;</span>
+        <h3>Free Delivery</h3>
+        <p>Free delivery on every order, no minimum spend.</p>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">&#127959;</span>
+        <h3>Trade Quality</h3>
+        <p>The same materials used by professionals — available to everyone.</p>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">&#128176;</span>
+        <h3>Direct Pricing</h3>
+        <p>No wholesaler markup. Fair prices, straight from us to you.</p>
+      </div>
+      <div class="benefit-card">
+        <span class="benefit-icon">&#128722;</span>
+        <h3>Easy Ordering</h3>
+        <p>Browse, add to cart, and checkout in minutes.</p>
+      </div>
     </div>
-  </main>
+  </section>
+
+  <!-- =====================================================================
+       FEATURED PRODUCTS
+       ===================================================================== -->
+  <section class="featured-section">
+    <div class="container">
+      <div class="featured-header">
+        <h2 class="section-title" style="border:none; margin:0;">Featured Products</h2>
+        <a href="products.html" class="featured-view-all">View all products &rarr;</a>
+      </div>
+      <!-- 4 featured cards injected by JS -->
+      <div class="product-grid" id="featured-grid"></div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       ABOUT SNIPPET
+       ===================================================================== -->
+  <section class="home-about">
+    <div class="container home-about-inner">
+      <div>
+        <h2>Who We Are</h2>
+        <p>
+          JP Materials is a UK-based direct-to-consumer supplier of rendering products.
+          We cut out the middleman so tradespeople and homeowners get premium materials
+          at fair prices — with free delivery on every order.
+        </p>
+        <a href="about.html" class="btn btn-secondary" style="margin-top:1rem; display:inline-flex;">About Us</a>
+      </div>
+      <div class="about-stats">
+        <div class="stat-card">
+          <span class="stat-number">11+</span>
+          <span class="stat-label">Products</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">Free</span>
+          <span class="stat-label">Delivery</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">Trade</span>
+          <span class="stat-label">Quality</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- =====================================================================
        FOOTER
@@ -54,73 +122,45 @@
 
   <script src="script.js"></script>
   <script>
-    // -------------------------------------------------------------------------
-    // Render the product grid on page load
-    // -------------------------------------------------------------------------
     document.addEventListener("DOMContentLoaded", () => {
-      renderProductGrid();
+      renderFeaturedProducts();
     });
 
     /**
-     * Builds and injects a product card for every product in the products array.
+     * Renders the first 4 products as featured cards on the home page.
      */
-    function renderProductGrid() {
-      const grid = document.getElementById("product-grid");
-
-      products.forEach((product) => {
+    function renderFeaturedProducts() {
+      const grid = document.getElementById("featured-grid");
+      products.slice(0, 4).forEach((product) => {
         const card = createProductCard(product);
         grid.appendChild(card);
       });
     }
 
-    /**
-     * Creates a single product card DOM element.
-     * @param {Object} product - A product object from the products array
-     * @returns {HTMLElement}
-     */
     function createProductCard(product) {
       const card = document.createElement("div");
       card.className = "product-card";
-
       card.innerHTML = `
-        <img
-          class="product-card__image"
-          src="${product.image}"
-          alt="${product.name}"
-          loading="lazy"
-        />
+        <img class="product-card__image" src="${product.image}" alt="${product.name}" loading="lazy" />
         <div class="product-card__body">
           <h3 class="product-card__name">${product.name}</h3>
           <p class="product-card__price">£${product.price.toFixed(2)}</p>
           <div class="product-card__actions">
             <a href="product.html?id=${product.id}" class="btn btn-secondary btn-sm">View</a>
-            <button
-              class="btn btn-primary btn-sm"
-              data-id="${product.id}"
-              onclick="handleAddToCart(this, ${product.id})"
-            >
+            <button class="btn btn-primary btn-sm" onclick="handleAddToCart(this, ${product.id})">
               Add to Cart
             </button>
           </div>
         </div>
       `;
-
       return card;
     }
 
-    /**
-     * Adds the product to the cart and briefly shows "Added!" feedback on the button.
-     * @param {HTMLButtonElement} btn - The clicked button element
-     * @param {number} productId - The ID of the product to add
-     */
     function handleAddToCart(btn, productId) {
       addToCart(productId, 1);
-
-      // Visual feedback — revert after 1.5s
       btn.textContent = "Added!";
       btn.classList.add("btn-added");
       btn.disabled = true;
-
       setTimeout(() => {
         btn.textContent = "Add to Cart";
         btn.classList.remove("btn-added");

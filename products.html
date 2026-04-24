@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products — JP Materials</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- =====================================================================
+       NAVBAR
+       ===================================================================== -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">JP<span>Materials</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html" class="active">Products</a></li>
+        <li><a href="about.html">About</a></li>
+        <li>
+          <a href="cart.html" class="nav-cart-link">
+            Cart
+            <span class="cart-badge">0</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- =====================================================================
+       HEADER
+       ===================================================================== -->
+  <section class="hero">
+    <h1>All Products</h1>
+    <p>Browse our full range of professional rendering products.</p>
+  </section>
+
+  <!-- =====================================================================
+       PRODUCT LISTING
+       ===================================================================== -->
+  <main>
+    <div class="container">
+      <!-- Product cards are injected here by renderProductGrid() -->
+      <div class="product-grid" id="product-grid"></div>
+    </div>
+  </main>
+
+  <!-- =====================================================================
+       FOOTER
+       ===================================================================== -->
+  <footer>
+    <p>&copy; 2026 JP Materials. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      renderProductGrid();
+    });
+
+    function renderProductGrid() {
+      const grid = document.getElementById("product-grid");
+      products.forEach((product) => {
+        grid.appendChild(createProductCard(product));
+      });
+    }
+
+    function createProductCard(product) {
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.innerHTML = `
+        <img
+          class="product-card__image"
+          src="${product.image}"
+          alt="${product.name}"
+          loading="lazy"
+        />
+        <div class="product-card__body">
+          <h3 class="product-card__name">${product.name}</h3>
+          <p class="product-card__price">£${product.price.toFixed(2)}</p>
+          <div class="product-card__actions">
+            <a href="product.html?id=${product.id}" class="btn btn-secondary btn-sm">View</a>
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="handleAddToCart(this, ${product.id})"
+            >
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      `;
+      return card;
+    }
+
+    function handleAddToCart(btn, productId) {
+      addToCart(productId, 1);
+      btn.textContent = "Added!";
+      btn.classList.add("btn-added");
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.textContent = "Add to Cart";
+        btn.classList.remove("btn-added");
+        btn.disabled = false;
+      }, 1500);
+    }
+  </script>
+
+</body>
+</html>
