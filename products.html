@@ -17,6 +17,7 @@
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="products.html" class="active">Products</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
         <li><a href="about.html">About</a></li>
         <li>
           <a href="cart.html" class="nav-cart-link">
@@ -41,8 +42,47 @@
        ===================================================================== -->
   <main>
     <div class="container">
-      <!-- Product cards are injected here by renderProductGrid() -->
+
+      <!-- Category tabs -->
+      <div class="category-tabs" id="category-tabs">
+        <button class="category-tab active" data-category="All">All</button>
+        <button class="category-tab" data-category="Mortars & Adhesives">Mortars &amp; Adhesives</button>
+        <button class="category-tab" data-category="Plasters & Renders">Plasters &amp; Renders</button>
+        <button class="category-tab" data-category="Paints & Primers">Paints &amp; Primers</button>
+        <button class="category-tab" data-category="Accessories">Accessories</button>
+        <button class="category-tab" data-category="Systems & Kits">Systems &amp; Kits</button>
+      </div>
+
+      <!-- Search & sort bar -->
+      <div class="filter-bar">
+        <input
+          type="search"
+          id="search-input"
+          class="filter-search"
+          placeholder="Search products..."
+          oninput="applyFilters()"
+        />
+        <select id="sort-select" class="filter-sort" onchange="applyFilters()">
+          <option value="default">Sort: Default</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name-az">Name: A–Z</option>
+        </select>
+      </div>
+
+      <!-- Result count -->
+      <p id="result-count" class="result-count"></p>
+
+      <!-- Product grid -->
       <div class="product-grid" id="product-grid"></div>
+
+      <!-- No results state -->
+      <div class="empty-state" id="no-results" style="display:none;">
+        <span class="empty-icon">🔍</span>
+        <h2>No products found</h2>
+        <p>Try a different search term or category.</p>
+      </div>
+
     </div>
   </main>
 
@@ -55,28 +95,81 @@
 
   <script src="script.js"></script>
   <script>
+    let activeCategory = "All";
+
     document.addEventListener("DOMContentLoaded", () => {
-      renderProductGrid();
+      // Category tab click handler
+      document.getElementById("category-tabs").addEventListener("click", (e) => {
+        const tab = e.target.closest(".category-tab");
+        if (!tab) return;
+        document.querySelectorAll(".category-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        activeCategory = tab.dataset.category;
+        applyFilters();
+      });
+
+      applyFilters();
     });
 
-    function renderProductGrid() {
-      const grid = document.getElementById("product-grid");
-      products.forEach((product) => {
-        grid.appendChild(createProductCard(product));
+    /** Reads current search + sort + category state and re-renders the grid */
+    function applyFilters() {
+      const query  = document.getElementById("search-input").value.toLowerCase().trim();
+      const sort   = document.getElementById("sort-select").value;
+
+      let filtered = products.filter((p) => {
+        const matchesCategory = activeCategory === "All" || p.category === activeCategory;
+        const matchesSearch  = p.name.toLowerCase().includes(query) ||
+                               p.description.toLowerCase().includes(query);
+        return matchesCategory && matchesSearch;
       });
+
+      // Sort
+      if (sort === "price-asc")  filtered.sort((a, b) => a.price - b.price);
+      if (sort === "price-desc") filtered.sort((a, b) => b.price - a.price);
+      if (sort === "name-az")    filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+      renderGrid(filtered);
     }
 
+    /** Renders the filtered products into the grid */
+    function renderGrid(list) {
+      const grid      = document.getElementById("product-grid");
+      const noResults = document.getElementById("no-results");
+      const count     = document.getElementById("result-count");
+
+      grid.innerHTML = "";
+
+      if (list.length === 0) {
+        grid.style.display  = "none";
+        noResults.style.display = "block";
+        count.textContent = "";
+      } else {
+        grid.style.display  = "";
+        noResults.style.display = "none";
+        count.textContent = `${list.length} product${list.length !== 1 ? "s" : ""}`;
+        list.forEach((product) => grid.appendChild(createProductCard(product)));
+      }
+    }
+
+    /** Builds a product card including a stock badge */
     function createProductCard(product) {
       const card = document.createElement("div");
       card.className = "product-card";
+
+      const { badgeHtml } = getStockBadge(product.stock);
+
       card.innerHTML = `
-        <img
-          class="product-card__image"
-          src="${product.image}"
-          alt="${product.name}"
-          loading="lazy"
-        />
+        <div class="product-card__image-wrap">
+          <img
+            class="product-card__image"
+            src="${product.image}"
+            alt="${product.name}"
+            loading="lazy"
+          />
+          ${badgeHtml}
+        </div>
         <div class="product-card__body">
+          <p class="product-card__category">${product.category}</p>
           <h3 class="product-card__name">${product.name}</h3>
           <p class="product-card__price">£${product.price.toFixed(2)}</p>
           <div class="product-card__actions">
@@ -84,13 +177,24 @@
             <button
               class="btn btn-primary btn-sm"
               onclick="handleAddToCart(this, ${product.id})"
+              ${product.stock === 0 ? "disabled" : ""}
             >
-              Add to Cart
+              ${product.stock === 0 ? "Out of Stock" : "Add to Cart"}
             </button>
           </div>
         </div>
       `;
       return card;
+    }
+
+    /**
+     * Returns the badge HTML for a given stock level.
+     * Low stock: <= 10 | Out of stock: 0
+     */
+    function getStockBadge(stock) {
+      if (stock === 0)  return { badgeHtml: `<span class="stock-badge out-of-stock">Out of Stock</span>` };
+      if (stock <= 10)  return { badgeHtml: `<span class="stock-badge low-stock">Low Stock</span>` };
+      return { badgeHtml: "" };
     }
 
     function handleAddToCart(btn, productId) {

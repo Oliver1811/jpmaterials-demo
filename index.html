@@ -17,6 +17,7 @@
       <ul class="nav-links">
         <li><a href="index.html" class="active">Home</a></li>
         <li><a href="products.html">Products</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
         <li><a href="about.html">About</a></li>
         <li>
           <a href="cart.html" class="nav-cart-link">
@@ -140,9 +141,18 @@
     function createProductCard(product) {
       const card = document.createElement("div");
       card.className = "product-card";
+      const badgeHtml = product.stock === 0
+        ? `<span class="stock-badge out-of-stock">Out of Stock</span>`
+        : product.stock <= 10
+        ? `<span class="stock-badge low-stock">Low Stock</span>`
+        : "";
       card.innerHTML = `
-        <img class="product-card__image" src="${product.image}" alt="${product.name}" loading="lazy" />
+        <div class="product-card__image-wrap">
+          <img class="product-card__image" src="${product.image}" alt="${product.name}" loading="lazy" />
+          ${badgeHtml}
+        </div>
         <div class="product-card__body">
+          <p class="product-card__category">${product.category}</p>
           <h3 class="product-card__name">${product.name}</h3>
           <p class="product-card__price">£${product.price.toFixed(2)}</p>
           <div class="product-card__actions">
